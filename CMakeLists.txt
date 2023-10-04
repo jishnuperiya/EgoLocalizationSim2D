@@ -7,7 +7,11 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 set(SRC_CPP
     src/main.cpp
-    src/SimDisplay.cpp
+    src/sim_display.cpp
+    src/ego_vehicle.h
+    src/ego_tracking_simulation.cpp
+    src/utils.cpp
+    src/sim_display.cpp
 )
 
 add_executable(${PROJECT_NAME}
