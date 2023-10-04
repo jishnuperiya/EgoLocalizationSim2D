@@ -1,35 +1,42 @@
 #include "SimDisplay.h"
 #include <iostream>
+
+
 SimDisplay::SimDisplay()
-:m_displayWidth(0),
- m_displayHeight(0),
- m_sdlWindow(nullptr),
- m_sdlRenderer(nullptr),
- m_sdlMainFont(nullptr)
+  :mScreenWidth(0),
+   mScreenHeight(0),
+   mSDLWindow(nullptr),
+   mSDLRenderer(nullptr),
+   mSDLMainFont(nullptr)
  {}
 
  SimDisplay::~SimDisplay()
  {
-  SDL_destroyRenderer();
+    SDL_destroyRenderer();
  }
 
  bool SimDisplay::SDL_createRenderer(std::string title, int displayWidth, int displayHeight)
  {
 
-    this->m_displayHeight=displayHeight;
-    this->m_displayWidth=displayWidth;
+    mScreenHeight=displayHeight;
+    mScreenWidth=displayWidth;
+
+    mViewWidth = mScreenWidth;
+    mViewHeight = mScreenHeight;
+    mViewXOffset = 0.0;
+    mViewYOffset = 0.0;
     
     // Create window
-    m_sdlWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayWidth, displayHeight, SDL_WINDOW_MAXIMIZED );
-    if (m_sdlWindow == nullptr)
+    mSDLWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayWidth, displayHeight, SDL_WINDOW_MAXIMIZED );
+    if (mSDLWindow == nullptr)
     {
       std::cout << SDL_GetError() << std::endl;
       return false;
     }
 
     // Create Renderer
-    m_sdlRenderer = SDL_CreateRenderer( m_sdlWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-    if( m_sdlRenderer == nullptr )
+    mSDLRenderer = SDL_CreateRenderer( mSDLWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+    if( mSDLRenderer == nullptr )
     {
         std::cout << "Renderer could not be created! SDL Error: " << SDL_GetError() << std::endl;
         SDL_destroyRenderer();
@@ -37,8 +44,8 @@ SimDisplay::SimDisplay()
     }
 
     // Create Font
-    m_sdlMainFont = TTF_OpenFont( "Roboto-Regular.ttf", 18 );
-    if( m_sdlMainFont == nullptr )
+    mSDLMainFont = TTF_OpenFont( "Roboto-Regular.ttf", 18 );
+    if( mSDLMainFont == nullptr )
     {
         std::cout << "Failed to load font! SDL_ttf Error: " <<  TTF_GetError() << std::endl;
         SDL_destroyRenderer();
@@ -52,41 +59,62 @@ SimDisplay::SimDisplay()
 void SimDisplay::SDL_destroyRenderer()
 {
     // Destroy Renderer
-    if (m_sdlRenderer != nullptr)
+    if (mSDLRenderer != nullptr)
     {
-        SDL_DestroyRenderer( m_sdlRenderer );
-        m_sdlRenderer = nullptr;
+        SDL_DestroyRenderer( mSDLRenderer );
+        mSDLRenderer = nullptr;
     }
 
     // Destroy Window
-    if(m_sdlWindow != nullptr)
+    if(mSDLWindow != nullptr)
     {
-        SDL_DestroyWindow(m_sdlWindow);
-        m_sdlWindow = nullptr;
+        SDL_DestroyWindow(mSDLWindow);
+        mSDLWindow = nullptr;
     }
 
     // Destroy Font
-    if(m_sdlMainFont != nullptr)
+    if(mSDLMainFont != nullptr)
     {
-        TTF_CloseFont(m_sdlMainFont);
-        m_sdlMainFont = nullptr;
+        TTF_CloseFont(mSDLMainFont);
+        mSDLMainFont = nullptr;
     }
 }
 
 void SimDisplay::showScreen()
 {
-    if (m_sdlRenderer != nullptr)
+    if (mSDLRenderer != nullptr)
     {
-        SDL_RenderPresent( m_sdlRenderer );
+        SDL_RenderPresent( mSDLRenderer );
     }
 }
 
+
+void SimDisplay::setDrawColour(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha){SDL_SetRenderDrawColor( mSDLRenderer, red, green, blue, alpha );}
+
+
 void SimDisplay::clearScreen()
 {
-    if (m_sdlRenderer != nullptr)
+    if (mSDLRenderer != nullptr)
     {
         //Clear screen
-        SDL_SetRenderDrawColor( m_sdlRenderer, 0x00, 0x00, 0x00, 0xFF );
-        SDL_RenderClear( m_sdlRenderer );
+        SDL_SetRenderDrawColor( mSDLRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+        SDL_RenderClear( mSDLRenderer );
     }
+}
+
+void SimDisplay::drawLine(const Vector2& startPos, const Vector2& endPos)
+{
+    Vector2 p1 = transformPoint(startPos);
+    Vector2 p2 = transformPoint(endPos);
+    SDL_RenderDrawLine( mSDLRenderer, p1.x, p1.y, p2.x, p2.y );
+}
+
+
+Vector2 SimDisplay::transformPoint(const Vector2& point)
+{
+    double dx = point.x - mViewXOffset;
+    double dy = point.y - mViewYOffset;
+    double y = mScreenHeight - (dx/mViewHeight)*mScreenHeight;
+    double x = (dy/mViewWidth)*mScreenWidth;
+    return Vector2(x,y);
 }
