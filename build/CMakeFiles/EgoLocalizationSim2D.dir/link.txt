@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/EgoLocalizationSim2D.dir/src/main.cpp.o CMakeFiles/EgoLocalizationSim2D.dir/src/SimDisplay.cpp.o -o EgoLocalizationSim2D  -lSDL2 -lSDL2_ttf 
+/usr/bin/g++ CMakeFiles/EgoLocalizationSim2D.dir/src/main.cpp.o CMakeFiles/EgoLocalizationSim2D.dir/src/SimDisplay.cpp.o -o EgoLocalizationSim2D  -lSDL2 -lSDL2_ttf 
