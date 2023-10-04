@@ -16,10 +16,15 @@ class SimDisplay
 {
     public:
 
+    static constexpr int DISPLAY_WIDTH = 1024;
+    static constexpr int DISPLAY_HEIGHT = 980;
+    static constexpr double MESH_SIZE = 500;
+    static constexpr double MESH_SPACEING = 25;
+
     SimDisplay();
     ~SimDisplay();
 
-    bool SDL_createRenderer(std::string title, int displayWidth, int displayHeight);
+    bool SDL_createRenderer(std::string title);
     void SDL_destroyRenderer();
 
     void showScreen();
@@ -33,7 +38,7 @@ class SimDisplay
 
     void setDrawColour(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha=0xFF);
     void drawLine(const Vector2& startPos, const Vector2& endPos);
-            
+    void drawBackgroundMesh();
 
     private:
 

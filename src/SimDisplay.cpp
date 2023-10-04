@@ -15,11 +15,11 @@ SimDisplay::SimDisplay()
     SDL_destroyRenderer();
  }
 
- bool SimDisplay::SDL_createRenderer(std::string title, int displayWidth, int displayHeight)
+ bool SimDisplay::SDL_createRenderer(std::string title)
  {
 
-    mScreenHeight=displayHeight;
-    mScreenWidth=displayWidth;
+    mScreenHeight=SimDisplay::DISPLAY_HEIGHT;
+    mScreenWidth=SimDisplay::DISPLAY_WIDTH;
 
     mViewWidth = mScreenWidth;
     mViewHeight = mScreenHeight;
@@ -27,7 +27,7 @@ SimDisplay::SimDisplay()
     mViewYOffset = 0.0;
     
     // Create window
-    mSDLWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, displayWidth, displayHeight, SDL_WINDOW_MAXIMIZED );
+    mSDLWindow = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, mScreenWidth, mScreenHeight, SDL_WINDOW_MAXIMIZED );
     if (mSDLWindow == nullptr)
     {
       std::cout << SDL_GetError() << std::endl;
@@ -90,6 +90,16 @@ void SimDisplay::showScreen()
 
 
 void SimDisplay::setDrawColour(uint8_t red, uint8_t green, uint8_t blue, uint8_t alpha){SDL_SetRenderDrawColor( mSDLRenderer, red, green, blue, alpha );}
+
+void SimDisplay::drawBackgroundMesh(){
+    setDrawColour(101, 101, 101);
+    for (int x = -SimDisplay::MESH_SIZE; x <= SimDisplay::MESH_SIZE; x += SimDisplay::MESH_SPACEING) {
+        drawLine(Vector2(x, -SimDisplay::MESH_SIZE), Vector2(x, SimDisplay::MESH_SIZE));
+    }
+    for (int y = -SimDisplay::MESH_SIZE; y <= SimDisplay::MESH_SIZE; y += SimDisplay::MESH_SPACEING) {
+        drawLine(Vector2(-SimDisplay::MESH_SIZE, y), Vector2(SimDisplay::MESH_SIZE, y));
+    }
+}
 
 
 void SimDisplay::clearScreen()
